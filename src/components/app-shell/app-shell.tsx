@@ -1,5 +1,8 @@
+"use client";
+
 import type { ReactNode } from "react";
-import { Bell, Search, UserRound } from "lucide-react";
+import { Bell, LogOut, Search, UserRound } from "lucide-react";
+import { signOut } from "@/lib/supabase/auth";
 import { MobileNav } from "./mobile-nav";
 import { Sidebar } from "./sidebar";
 
@@ -25,6 +28,13 @@ export function AppShell({ children }: { children: ReactNode }) {
                 </button>
                 <button className="grid size-10 place-items-center rounded-lg border border-line bg-white text-green" aria-label="Account">
                   <UserRound className="size-5" />
+                </button>
+                <button
+                  className="grid size-10 place-items-center rounded-lg border border-line bg-white text-muted hover:text-danger"
+                  aria-label="Sign out"
+                  onClick={() => void signOut()}
+                >
+                  <LogOut className="size-5" />
                 </button>
               </div>
             </div>

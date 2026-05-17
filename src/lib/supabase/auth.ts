@@ -29,3 +29,8 @@ export async function signOut() {
   const supabase = createBrowserSupabaseClient();
   return supabase.auth.signOut();
 }
+
+export async function updatePassword(password: string) {
+  const supabase = createBrowserSupabaseClient();
+  return supabase.auth.updateUser({ password });
+}
