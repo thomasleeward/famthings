@@ -191,11 +191,6 @@ export default function GroceriesPage() {
       <SectionHeader
         eyebrow="Ward Fam"
         title="Groceries"
-        action={
-          <Button onClick={() => document.getElementById("new-grocery-item")?.focus()}>
-            <Plus className="size-4" /> Add item
-          </Button>
-        }
       />
 
       <section>

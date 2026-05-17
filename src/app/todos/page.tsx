@@ -1,15 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { CalendarDays, Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+import { CalendarDays, Check, Loader2, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SectionHeader } from "@/components/ui/section-header";
-import { getCurrentHousehold, getHouseholdTodos, type TodoRow } from "@/lib/supabase/live-data";
+import { createBrowserSupabaseClient } from "@/lib/supabase/client";
+import { getCurrentHousehold, getHouseholdEvents, getHouseholdTodos, type EventRow, type TodoRow } from "@/lib/supabase/live-data";
 
 const groups = ["Due soon", "Later this week", "Someday", "Done"] as const;
+const filters = ["Open", "This week", "Anytime", "Done"] as const;
+type TodoFilter = (typeof filters)[number];
 
 function formatDue(todo: TodoRow) {
   if (todo.completed && todo.completed_at) {
@@ -34,52 +37,198 @@ function getTodoGroup(todo: TodoRow): (typeof groups)[number] {
 
   const due = new Date(todo.due_at);
   const now = new Date();
+  const tomorrow = new Date(now);
+  tomorrow.setDate(now.getDate() + 1);
+  tomorrow.setHours(23, 59, 59, 999);
+
+  if (due <= tomorrow) {
+    return "Due soon";
+  }
+
   const weekOut = new Date(now);
   weekOut.setDate(now.getDate() + 7);
 
-  return due <= weekOut ? "Due soon" : "Later this week";
+  return due <= weekOut ? "Later this week" : "Someday";
+}
+
+function getEventLabel(event: EventRow) {
+  return `${event.title} · ${new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(event.start_at))}`;
+}
+
+function matchesFilter(todo: TodoRow, filter: TodoFilter) {
+  const group = getTodoGroup(todo);
+
+  if (filter === "Open") {
+    return !todo.completed;
+  }
+
+  if (filter === "This week") {
+    return group === "Due soon" || group === "Later this week";
+  }
+
+  if (filter === "Anytime") {
+    return group === "Someday";
+  }
+
+  return group === "Done";
 }
 
 export default function TodosPage() {
+  const [householdId, setHouseholdId] = useState("");
+  const [userId, setUserId] = useState("");
   const [todos, setTodos] = useState<TodoRow[]>([]);
+  const [events, setEvents] = useState<EventRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [filter, setFilter] = useState<TodoFilter>("Open");
+  const [title, setTitle] = useState("");
+  const [notes, setNotes] = useState("");
+  const [dueAt, setDueAt] = useState("");
+  const [eventId, setEventId] = useState("");
+  const [saving, setSaving] = useState(false);
+  const [pendingTodoIds, setPendingTodoIds] = useState<Set<string>>(new Set());
+
+  const loadTodos = useCallback(async () => {
+    try {
+      setLoading(true);
+      setError("");
+      const { household, user } = await getCurrentHousehold();
+      const [todoRows, eventRows] = await Promise.all([
+        getHouseholdTodos(household.id),
+        getHouseholdEvents(household.id),
+      ]);
+
+      setHouseholdId(household.id);
+      setUserId(user.id);
+      setTodos(todoRows);
+      setEvents(eventRows);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not load to-dos.");
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   useEffect(() => {
     let active = true;
 
-    async function loadTodos() {
-      try {
-        setLoading(true);
-        setError("");
-        const { household } = await getCurrentHousehold();
-        const todoRows = await getHouseholdTodos(household.id);
-
-        if (active) {
-          setTodos(todoRows);
-        }
-      } catch (err) {
-        if (active) {
-          setError(err instanceof Error ? err.message : "Could not load to-dos.");
-        }
-      } finally {
-        if (active) {
-          setLoading(false);
-        }
+    async function loadActiveTodos() {
+      if (active) {
+        await loadTodos();
       }
     }
 
-    void loadTodos();
+    void loadActiveTodos();
 
     return () => {
       active = false;
     };
-  }, []);
+  }, [loadTodos]);
 
   const complete = todos.filter((todo) => todo.completed).length;
   const progress = todos.length ? Math.round((complete / todos.length) * 100) : 0;
   const open = todos.filter((todo) => !todo.completed).length;
   const done = todos.filter((todo) => todo.completed).length;
+  const thisWeek = todos.filter((todo) => !todo.completed && matchesFilter(todo, "This week")).length;
+  const anytime = todos.filter((todo) => !todo.completed && matchesFilter(todo, "Anytime")).length;
+  const visibleTodos = todos.filter((todo) => matchesFilter(todo, filter));
+  const visibleGroups = filter === "Open"
+    ? groups.filter((group) => group !== "Done")
+    : filter === "This week"
+      ? groups.filter((group) => group === "Due soon" || group === "Later this week")
+      : filter === "Anytime"
+        ? groups.filter((group) => group === "Someday")
+        : groups.filter((group) => group === "Done");
+
+  function focusForm() {
+    document.getElementById("new-todo-title")?.focus();
+  }
+
+  function setTodoPending(todoId: string, pending: boolean) {
+    setPendingTodoIds((current) => {
+      const next = new Set(current);
+
+      if (pending) {
+        next.add(todoId);
+      } else {
+        next.delete(todoId);
+      }
+
+      return next;
+    });
+  }
+
+  async function toggleTodo(todo: TodoRow) {
+    const nextCompleted = !todo.completed;
+    const completedAt = nextCompleted ? new Date().toISOString() : null;
+
+    setTodoPending(todo.id, true);
+    setError("");
+    setTodos((items) => items.map((item) => item.id === todo.id ? { ...item, completed: nextCompleted, completed_at: completedAt } : item));
+
+    const supabase = createBrowserSupabaseClient();
+    const { error: updateError } = await supabase
+      .from("todos")
+      .update({ completed: nextCompleted, completed_at: completedAt })
+      .eq("id", todo.id)
+      .eq("household_id", todo.household_id);
+
+    if (updateError) {
+      setTodos((items) => items.map((item) => item.id === todo.id ? todo : item));
+      setError(updateError.message);
+    }
+
+    setTodoPending(todo.id, false);
+  }
+
+  async function addTodo() {
+    const nextTitle = title.trim();
+
+    if (!nextTitle) {
+      setError("Enter a to-do title.");
+      return;
+    }
+
+    if (!householdId) {
+      setError("Could not find your household.");
+      return;
+    }
+
+    try {
+      setSaving(true);
+      setError("");
+
+      const supabase = createBrowserSupabaseClient();
+      const { data, error: insertError } = await supabase
+        .from("todos")
+        .insert({
+          household_id: householdId,
+          event_id: eventId || null,
+          title: nextTitle,
+          notes: notes.trim() || null,
+          due_at: dueAt ? new Date(dueAt).toISOString() : null,
+          completed: false,
+          created_by: userId || null,
+        })
+        .select("id, household_id, event_id, title, notes, due_at, completed, completed_at, created_by, created_at")
+        .single();
+
+      if (insertError || !data) {
+        throw new Error(insertError?.message || "Could not add to-do.");
+      }
+
+      setTodos((items) => [data, ...items]);
+      setTitle("");
+      setNotes("");
+      setDueAt("");
+      setEventId("");
+      setFilter("Open");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not add to-do.");
+    } finally {
+      setSaving(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -87,18 +236,25 @@ export default function TodosPage() {
         eyebrow="Ward Fam"
         title="To-dos"
         action={
-          <Button>
+          <Button onClick={focusForm}>
             <Plus className="size-4" /> New to-do
           </Button>
         }
       />
 
       <div className="flex flex-wrap gap-2">
-        {[`Open · ${open}`, "This week", "Anytime", `Done · ${done}`].map((filter, index) => (
-          <Badge className={index === 0 ? "border-green bg-soft-green text-success" : "bg-white text-muted"} key={filter}>
-            {filter}
-          </Badge>
-        ))}
+        {filters.map((label) => {
+          const count = label === "Open" ? open : label === "This week" ? thisWeek : label === "Anytime" ? anytime : done;
+          const active = filter === label;
+
+          return (
+            <button key={label} onClick={() => setFilter(label)}>
+              <Badge className={active ? "border-green bg-soft-green text-success" : "bg-white text-muted"}>
+                {label} · {count}
+              </Badge>
+            </button>
+          );
+        })}
       </div>
 
       <section>
@@ -113,8 +269,8 @@ export default function TodosPage() {
         <section className="space-y-5">
           {loading ? <Card className="p-4 text-sm font-medium text-muted">Loading to-dos...</Card> : null}
           {error ? <Card className="p-4 text-sm font-medium text-danger">{error}</Card> : null}
-          {!loading && !error && groups.map((group) => {
-            const groupTodos = todos.filter((todo) => getTodoGroup(todo) === group);
+          {!loading && !error && visibleGroups.map((group) => {
+            const groupTodos = visibleTodos.filter((todo) => getTodoGroup(todo) === group);
             return (
               <div key={group}>
                 <div className="mb-3 flex items-center justify-between">
@@ -125,7 +281,14 @@ export default function TodosPage() {
                   <div className="space-y-3">
                     {groupTodos.map((todo) => (
                       <Card className="flex items-center gap-4 p-4" key={todo.id}>
-                        <span className={todo.completed ? "grid size-9 place-items-center rounded-full bg-success text-white" : "size-9 rounded-full border border-green"}>{todo.completed ? "✓" : ""}</span>
+                        <button
+                          className={todo.completed ? "grid size-9 place-items-center rounded-full bg-success text-white transition hover:bg-green" : "grid size-9 place-items-center rounded-full border border-green text-green transition hover:bg-soft-green"}
+                          onClick={() => void toggleTodo(todo)}
+                          disabled={pendingTodoIds.has(todo.id)}
+                          aria-label={todo.completed ? `Mark ${todo.title} open` : `Mark ${todo.title} done`}
+                        >
+                          {pendingTodoIds.has(todo.id) ? <Loader2 className="size-4 animate-spin" /> : todo.completed ? <Check className="size-4" /> : null}
+                        </button>
                         <div className="min-w-0">
                           <p className={todo.completed ? "font-semibold text-muted line-through" : "font-semibold"}>{todo.title}</p>
                           <p className="flex items-center gap-1 text-sm text-muted">
@@ -137,8 +300,8 @@ export default function TodosPage() {
                   </div>
                 ) : (
                   <Card className="flex items-center justify-between border-dashed bg-cream p-4">
-                    <p className="text-muted">Nothing due {group === "Due soon" ? "today or tomorrow" : group.toLowerCase()}</p>
-                    <Button variant="secondary">
+                    <p className="text-muted">{group === "Done" ? "Nothing done yet" : `Nothing due ${group === "Due soon" ? "today or tomorrow" : group.toLowerCase()}`}</p>
+                    <Button variant="secondary" onClick={focusForm}>
                       <Plus className="size-4" /> Add a to-do
                     </Button>
                   </Card>
@@ -150,22 +313,50 @@ export default function TodosPage() {
 
         <Card className="h-fit p-4">
           <h2 className="text-lg font-medium">New To-do</h2>
-          <div className="mt-4 space-y-3">
-            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="What needs doing?" />
-            <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
-            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" type="datetime-local" />
-            <select className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium text-muted">
-              <option>No linked event</option>
-              <option>Thomas Birthday</option>
-              <option>Mother&apos;s Day</option>
+          <form
+            className="mt-4 space-y-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              void addTodo();
+            }}
+          >
+            <input
+              id="new-todo-title"
+              className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium"
+              value={title}
+              onChange={(event) => setTitle(event.target.value)}
+              placeholder="What needs doing?"
+            />
+            <textarea
+              className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium"
+              value={notes}
+              onChange={(event) => setNotes(event.target.value)}
+              placeholder="Notes"
+            />
+            <input
+              className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium"
+              type="datetime-local"
+              value={dueAt}
+              onChange={(event) => setDueAt(event.target.value)}
+            />
+            <select
+              className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium text-muted"
+              value={eventId}
+              onChange={(event) => setEventId(event.target.value)}
+            >
+              <option value="">No linked event</option>
+              {events.map((event) => (
+                <option value={event.id} key={event.id}>{getEventLabel(event)}</option>
+              ))}
             </select>
             <p className="text-sm leading-6 text-muted">
               Event-linked items use the same <span className="font-medium text-ink">todos</span> table with an optional <span className="font-medium text-ink">event_id</span>.
             </p>
-            <Button className="w-full">
+            <Button className="w-full" disabled={saving || !title.trim()}>
+              {saving ? <Loader2 className="size-4 animate-spin" /> : null}
               <Plus className="size-4" /> Add To-do
             </Button>
-          </div>
+          </form>
         </Card>
       </div>
     </div>
