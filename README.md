@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fam Things Web
 
-## Getting Started
+Desktop web app scaffold for Fam Things, built with Next.js App Router, TypeScript, Tailwind CSS, Supabase JS, and Vercel-friendly environment variables.
 
-First, run the development server:
+## Local Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Environment
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create `.env.local` from `.env.example`:
 
-## Learn More
+```bash
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+These public values are safe for Vercel client-side Supabase usage when Row Level Security is configured correctly in Supabase.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Supabase Integration Points
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `src/types/database.ts` contains the starter database type map for the existing tables and RPCs.
+- `src/lib/supabase/client.ts` creates the typed browser Supabase client.
+- `src/lib/supabase/auth.ts` wraps browser-triggered Supabase Auth flows, including password reset email links.
+- `src/lib/supabase/households.ts` wraps the invite RPCs and `send-household-invite` Edge Function.
+- `src/lib/supabase/planning.ts` includes helpers for event-linked to-dos and meal-plan ingredients flowing into groceries.
 
-## Deploy on Vercel
+Password reset emails are triggered with `supabase.auth.resetPasswordForEmail()` and redirect to `/auth/update-password`.
+Household invite emails are triggered by invoking the existing `send-household-invite` Supabase Edge Function. Keep the Resend API key in Supabase Edge Function secrets, not in `NEXT_PUBLIC_*` variables.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Product Structure
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- `/` dashboard
+- `/events`
+- `/todos`
+- `/meals`
+- `/groceries`
+- `/household`
+
+The current UI uses sample data in `src/lib/data/sample.ts` so the app has a polished shell before auth and live queries are connected.
+
+## Deploy
+
+When you are ready:
+
+1. Create a GitHub repository and push this project.
+2. Create a Vercel project from that repository.
+3. Add `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, and `NEXT_PUBLIC_APP_URL` in Vercel project settings.
+4. Deploy.
+# famthings
