@@ -1,14 +1,85 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { CalendarDays, Plus } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SectionHeader } from "@/components/ui/section-header";
-import { todos } from "@/lib/data/sample";
+import { getCurrentHousehold, getHouseholdTodos, type TodoRow } from "@/lib/supabase/live-data";
+
+const groups = ["Due soon", "Later this week", "Someday", "Done"] as const;
+
+function formatDue(todo: TodoRow) {
+  if (todo.completed && todo.completed_at) {
+    return `Done ${new Intl.DateTimeFormat("en", { month: "short", day: "numeric" }).format(new Date(todo.completed_at))}`;
+  }
+
+  if (!todo.due_at) {
+    return "No due date";
+  }
+
+  return new Intl.DateTimeFormat("en", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(todo.due_at));
+}
+
+function getTodoGroup(todo: TodoRow): (typeof groups)[number] {
+  if (todo.completed) {
+    return "Done";
+  }
+
+  if (!todo.due_at) {
+    return "Someday";
+  }
+
+  const due = new Date(todo.due_at);
+  const now = new Date();
+  const weekOut = new Date(now);
+  weekOut.setDate(now.getDate() + 7);
+
+  return due <= weekOut ? "Due soon" : "Later this week";
+}
 
 export default function TodosPage() {
+  const [todos, setTodos] = useState<TodoRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadTodos() {
+      try {
+        setLoading(true);
+        setError("");
+        const { household } = await getCurrentHousehold();
+        const todoRows = await getHouseholdTodos(household.id);
+
+        if (active) {
+          setTodos(todoRows);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "Could not load to-dos.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadTodos();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const complete = todos.filter((todo) => todo.completed).length;
-  const progress = Math.round((complete / todos.length) * 100);
+  const progress = todos.length ? Math.round((complete / todos.length) * 100) : 0;
+  const open = todos.filter((todo) => !todo.completed).length;
+  const done = todos.filter((todo) => todo.completed).length;
 
   return (
     <div className="space-y-6">
@@ -23,7 +94,7 @@ export default function TodosPage() {
       />
 
       <div className="flex flex-wrap gap-2">
-        {["Open · 1", "This week", "Anytime · 1", "Done · 1"].map((filter, index) => (
+        {[`Open · ${open}`, "This week", "Anytime", `Done · ${done}`].map((filter, index) => (
           <Badge className={index === 0 ? "border-green bg-soft-green text-success" : "bg-white text-muted"} key={filter}>
             {filter}
           </Badge>
@@ -40,8 +111,10 @@ export default function TodosPage() {
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <section className="space-y-5">
-          {["Due soon", "Later this week", "Someday", "Done"].map((group) => {
-            const groupTodos = todos.filter((todo) => todo.period === group);
+          {loading ? <Card className="p-4 text-sm font-medium text-muted">Loading to-dos...</Card> : null}
+          {error ? <Card className="p-4 text-sm font-medium text-danger">{error}</Card> : null}
+          {!loading && !error && groups.map((group) => {
+            const groupTodos = todos.filter((todo) => getTodoGroup(todo) === group);
             return (
               <div key={group}>
                 <div className="mb-3 flex items-center justify-between">
@@ -56,7 +129,7 @@ export default function TodosPage() {
                         <div className="min-w-0">
                           <p className={todo.completed ? "font-semibold text-muted line-through" : "font-semibold"}>{todo.title}</p>
                           <p className="flex items-center gap-1 text-sm text-muted">
-                            <CalendarDays className="size-3.5" /> {todo.due}
+                            <CalendarDays className="size-3.5" /> {formatDue(todo)}
                           </p>
                         </div>
                       </Card>

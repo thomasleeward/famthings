@@ -43,7 +43,7 @@ Household invite emails are triggered by invoking the existing `send-household-i
 - `/groceries`
 - `/household`
 
-The current UI uses sample data in `src/lib/data/sample.ts` so the app has a polished shell before auth and live queries are connected.
+The app reads household-scoped data from Supabase after authentication. Pages should avoid hardcoded household, member, planning, or grocery data so production never shows scaffold content.
 
 ## Deploy
 

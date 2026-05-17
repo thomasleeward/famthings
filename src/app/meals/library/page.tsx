@@ -1,15 +1,52 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ArrowLeft, ChevronRight, Plus, Search, Soup, Star } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
-import { meals } from "@/lib/data/sample";
+import { getCurrentHousehold, getHouseholdMeals, type MealWithIngredients } from "@/lib/supabase/live-data";
 
 const filters = ["All", "Breakfast", "Lunch", "Dinner", "Snacks"];
 
 export default function MealLibraryPage() {
-  const featuredMeal = meals[1];
+  const [meals, setMeals] = useState<MealWithIngredients[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const featuredMeal = meals[0];
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadMeals() {
+      try {
+        setLoading(true);
+        setError("");
+        const { household } = await getCurrentHousehold();
+        const mealRows = await getHouseholdMeals(household.id);
+
+        if (active) {
+          setMeals(mealRows);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "Could not load meals.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadMeals();
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   return (
     <div className="space-y-6">
@@ -56,7 +93,9 @@ export default function MealLibraryPage() {
           </div>
 
           <div className="grid gap-3 lg:grid-cols-2">
-            {meals.map((meal) => (
+            {loading ? <Card className="p-4 text-sm font-medium text-muted">Loading meals...</Card> : null}
+            {error ? <Card className="p-4 text-sm font-medium text-danger">{error}</Card> : null}
+            {!loading && !error && meals.map((meal) => (
               <Card className="group flex items-center gap-4 p-4 transition hover:border-green" key={meal.id}>
                 <div className="grid size-12 shrink-0 place-items-center rounded-lg bg-cream text-muted group-hover:text-green">
                   <Soup className="size-5" />
@@ -64,10 +103,10 @@ export default function MealLibraryPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <p className="truncate text-lg font-medium">{meal.name}</p>
-                    {meal.ingredients > 0 ? <Star className="size-4 fill-lime text-ink" /> : null}
+                    {meal.ingredients.length > 0 ? <Star className="size-4 fill-lime text-ink" /> : null}
                   </div>
                   <p className="text-sm text-muted">
-                    {meal.ingredients ? `${meal.ingredients} ingredients` : "No ingredients yet"} · {meal.slot}
+                    {meal.ingredients.length ? `${meal.ingredients.length} ingredients` : "No ingredients yet"}
                   </p>
                 </div>
                 <ChevronRight className="size-5 text-line group-hover:text-green" />
@@ -75,31 +114,31 @@ export default function MealLibraryPage() {
             ))}
           </div>
 
-          <Card className="border-dashed bg-cream p-6 text-center">
+          {!loading && !error && !meals.length ? <Card className="border-dashed bg-cream p-6 text-center">
             <h2 className="text-lg font-medium">Build out your library</h2>
             <p className="mt-2 text-muted">Add family favorites to plan them quickly later.</p>
             <Button className="mt-4" variant="secondary">
               <Plus className="size-4" /> Add another meal
             </Button>
-          </Card>
+          </Card> : null}
         </section>
 
         <aside className="space-y-4">
           <Card className="p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green">Selected meal</p>
-            <h2 className="mt-2 font-serif text-3xl font-medium">{featuredMeal.name}</h2>
+            <h2 className="mt-2 font-serif text-3xl font-medium">{featuredMeal?.name || "No meal selected"}</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
               Keep ingredients attached to meals here, then use the planner to generate grocery items from the selected meal plan entry.
             </p>
             <div className="mt-4 space-y-2">
-              {["Chicken breast", "Potatoes", "Broccoli"].map((ingredient) => (
-                <div className="flex items-center justify-between rounded-lg border border-line bg-cream px-3 py-2" key={ingredient}>
-                  <span className="font-medium">{ingredient}</span>
-                  <Badge className="bg-white text-muted">1</Badge>
+              {(featuredMeal?.ingredients || []).map((ingredient) => (
+                <div className="flex items-center justify-between rounded-lg border border-line bg-cream px-3 py-2" key={ingredient.id}>
+                  <span className="font-medium">{ingredient.name}</span>
+                  <Badge className="bg-white text-muted">{[ingredient.quantity, ingredient.unit].filter(Boolean).join(" ") || "1"}</Badge>
                 </div>
               ))}
             </div>
-            <Button className="mt-4 w-full">Plan this meal</Button>
+            <Button className="mt-4 w-full" disabled={!featuredMeal}>Plan this meal</Button>
           </Card>
 
           <Card className="p-4">

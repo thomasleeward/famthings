@@ -1,14 +1,78 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { BookOpen, CalendarPlus, Plus, Soup } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { SectionHeader } from "@/components/ui/section-header";
-import { mealPlan, meals } from "@/lib/data/sample";
+import { getCurrentHousehold, getHouseholdMealPlanEntries, getHouseholdMeals, type MealPlanEntryWithMeal, type MealWithIngredients } from "@/lib/supabase/live-data";
 
 const slots = ["breakfast", "lunch", "dinner", "snack"] as const;
 
+function toDateKey(date: Date) {
+  return date.toISOString().slice(0, 10);
+}
+
+function addDays(date: Date, days: number) {
+  const next = new Date(date);
+  next.setDate(date.getDate() + days);
+  return next;
+}
+
+function formatDay(date: Date) {
+  return new Intl.DateTimeFormat("en", { weekday: "short", day: "numeric" }).format(date);
+}
+
 export default function MealsPage() {
+  const [meals, setMeals] = useState<MealWithIngredients[]>([]);
+  const [entries, setEntries] = useState<MealPlanEntryWithMeal[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  const days = useMemo(() => {
+    const today = new Date();
+    return Array.from({ length: 7 }, (_, index) => addDays(today, index));
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadMeals() {
+      try {
+        setLoading(true);
+        setError("");
+        const { household } = await getCurrentHousehold();
+        const [mealRows, entryRows] = await Promise.all([
+          getHouseholdMeals(household.id),
+          getHouseholdMealPlanEntries(household.id, toDateKey(days[0]), toDateKey(days[days.length - 1])),
+        ]);
+
+        if (active) {
+          setMeals(mealRows);
+          setEntries(entryRows);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "Could not load meals.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadMeals();
+
+    return () => {
+      active = false;
+    };
+  }, [days]);
+
+  const entriesByDateAndSlot = new Map(entries.map((entry) => [`${entry.planned_date}:${entry.meal_slot}`, entry]));
+
   return (
     <div className="space-y-6">
       <SectionHeader
@@ -32,10 +96,10 @@ export default function MealsPage() {
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <section className="space-y-4">
           <div className="grid grid-cols-7 gap-2">
-            {mealPlan.map((day, index) => (
-              <button className={index === 0 ? "rounded-lg bg-soft-lime p-2.5 text-center font-semibold text-green" : "rounded-lg border border-line bg-white p-2.5 text-center font-semibold text-muted"} key={day.day}>
-                <span className="block text-xs uppercase">{day.day.split(" ")[0]}</span>
-                <span className="text-xl">{day.day.split(" ")[1]}</span>
+            {days.map((day, index) => (
+              <button className={index === 0 ? "rounded-lg bg-soft-lime p-2.5 text-center font-semibold text-green" : "rounded-lg border border-line bg-white p-2.5 text-center font-semibold text-muted"} key={toDateKey(day)}>
+                <span className="block text-xs uppercase">{formatDay(day).split(" ")[0]}</span>
+                <span className="text-xl">{formatDay(day).split(" ")[1]}</span>
               </button>
             ))}
           </div>
@@ -46,7 +110,7 @@ export default function MealsPage() {
                 <h2 className="font-serif text-2xl font-medium">Weekly planner</h2>
                 <p className="text-sm text-muted">Plan meals, then add ingredients to groceries from the selected meal.</p>
               </div>
-              <Badge>2 planned</Badge>
+              <Badge>{entries.length} planned</Badge>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-left text-sm">
@@ -57,13 +121,21 @@ export default function MealsPage() {
                   </tr>
                 </thead>
                 <tbody>
-                  {mealPlan.map((day) => (
-                    <tr className="border-t border-line" key={day.day}>
-                      <td className="px-4 py-4 font-semibold">{day.day}</td>
+                  {loading ? (
+                    <tr className="border-t border-line">
+                      <td className="px-4 py-4 text-muted" colSpan={5}>Loading meal plan...</td>
+                    </tr>
+                  ) : error ? (
+                    <tr className="border-t border-line">
+                      <td className="px-4 py-4 text-danger" colSpan={5}>{error}</td>
+                    </tr>
+                  ) : days.map((day) => (
+                    <tr className="border-t border-line" key={toDateKey(day)}>
+                      <td className="px-4 py-4 font-semibold">{formatDay(day)}</td>
                       {slots.map((slot) => (
                         <td className="px-4 py-4" key={slot}>
-                          {day[slot] ? (
-                            <span className="rounded-full bg-soft-green px-3 py-1 font-medium text-success">{day[slot]}</span>
+                          {entriesByDateAndSlot.get(`${toDateKey(day)}:${slot}`)?.meal ? (
+                            <span className="rounded-full bg-soft-green px-3 py-1 font-medium text-success">{entriesByDateAndSlot.get(`${toDateKey(day)}:${slot}`)?.meal?.name}</span>
                           ) : (
                             <button className="font-medium text-green">+ plan</button>
                           )}
@@ -85,17 +157,20 @@ export default function MealsPage() {
             </div>
             <input className="mt-4 h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Search meals..." />
             <div className="mt-4 space-y-3">
-              {meals.map((meal) => (
+              {loading ? <p className="text-sm font-medium text-muted">Loading meals...</p> : null}
+              {error ? <p className="text-sm font-medium text-danger">{error}</p> : null}
+              {!loading && !error && meals.map((meal) => (
                 <div className="flex items-center gap-3 rounded-lg border border-line p-3" key={meal.id}>
                   <div className="grid size-10 place-items-center rounded-lg bg-cream text-muted">
                     <Soup className="size-5" />
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-semibold">{meal.name}</p>
-                    <p className="text-sm text-muted">{meal.ingredients ? `${meal.ingredients} ingredients` : "No ingredients yet"}</p>
+                    <p className="text-sm text-muted">{meal.ingredients.length ? `${meal.ingredients.length} ingredients` : "No ingredients yet"}</p>
                   </div>
                 </div>
               ))}
+              {!loading && !error && !meals.length ? <p className="text-sm font-medium text-muted">No meals yet.</p> : null}
             </div>
           </Card>
 

@@ -1,14 +1,53 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { Plus, ShoppingCart, Trash2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { SectionHeader } from "@/components/ui/section-header";
-import { groceries } from "@/lib/data/sample";
+import { getCurrentHousehold, getHouseholdGroceries, type GroceryRow } from "@/lib/supabase/live-data";
 
 export default function GroceriesPage() {
+  const [groceries, setGroceries] = useState<GroceryRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    let active = true;
+
+    async function loadGroceries() {
+      try {
+        setLoading(true);
+        setError("");
+        const { household } = await getCurrentHousehold();
+        const groceryRows = await getHouseholdGroceries(household.id);
+
+        if (active) {
+          setGroceries(groceryRows);
+        }
+      } catch (err) {
+        if (active) {
+          setError(err instanceof Error ? err.message : "Could not load groceries.");
+        }
+      } finally {
+        if (active) {
+          setLoading(false);
+        }
+      }
+    }
+
+    void loadGroceries();
+
+    return () => {
+      active = false;
+    };
+  }, []);
+
   const checked = groceries.filter((item) => item.checked).length;
   const open = groceries.filter((item) => !item.checked);
+  const progress = groceries.length ? (checked / groceries.length) * 100 : 0;
 
   return (
     <div className="space-y-6">
@@ -27,7 +66,7 @@ export default function GroceriesPage() {
           <p className="font-medium text-muted">{checked} of {groceries.length} in cart</p>
           <p className="font-semibold text-success">{open.length} left</p>
         </div>
-        <Progress value={(checked / groceries.length) * 100} />
+        <Progress value={progress} />
       </section>
 
       <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
@@ -37,16 +76,22 @@ export default function GroceriesPage() {
             <Badge>{open.length}</Badge>
           </div>
           <div className="divide-y divide-line">
-            {open.map((item) => (
+            {loading ? (
+              <div className="p-4 text-sm font-medium text-muted">Loading groceries...</div>
+            ) : error ? (
+              <div className="p-4 text-sm font-medium text-danger">{error}</div>
+            ) : open.length ? open.map((item) => (
               <div className="grid grid-cols-[36px_1fr_auto] items-center gap-4 p-4" key={item.id}>
                 <span className="size-7 rounded-full border border-green" />
                 <div>
                   <p className="font-semibold">{item.name}</p>
                   <p className="text-sm capitalize text-muted">{item.source}</p>
                 </div>
-                {item.quantity ? <Badge className="bg-cream text-muted">{item.quantity}</Badge> : null}
+                {item.quantity || item.unit ? <Badge className="bg-cream text-muted">{[item.quantity, item.unit].filter(Boolean).join(" ")}</Badge> : null}
               </div>
-            ))}
+            )) : (
+              <div className="p-4 text-sm font-medium text-muted">No grocery items yet.</div>
+            )}
             <div className="grid grid-cols-[36px_1fr_auto] items-center gap-4 p-4">
               <div className="grid size-7 place-items-center rounded-full border border-green text-green">
                 <Plus className="size-4" />
