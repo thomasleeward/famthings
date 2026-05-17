@@ -18,7 +18,7 @@ export default function MealsPage() {
           <div className="flex gap-2">
             <Link
               href="/meals/library"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border-2 border-green bg-white px-4 text-sm font-bold text-green transition hover:-translate-y-0.5"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-green/30 bg-white px-4 text-sm font-semibold text-green transition hover:bg-soft-green"
             >
               <BookOpen className="size-4" /> Meal library
             </Link>
@@ -33,7 +33,7 @@ export default function MealsPage() {
         <section className="space-y-4">
           <div className="grid grid-cols-7 gap-2">
             {mealPlan.map((day, index) => (
-              <button className={index === 0 ? "rounded-lg bg-soft-lime p-3 text-center font-black text-green" : "rounded-lg border border-line bg-white p-3 text-center font-black text-muted"} key={day.day}>
+              <button className={index === 0 ? "rounded-xl bg-soft-lime p-3 text-center font-semibold text-green" : "rounded-xl border border-line bg-white p-3 text-center font-semibold text-muted"} key={day.day}>
                 <span className="block text-xs uppercase">{day.day.split(" ")[0]}</span>
                 <span className="text-2xl">{day.day.split(" ")[1]}</span>
               </button>
@@ -43,14 +43,14 @@ export default function MealsPage() {
           <Card className="overflow-hidden">
             <div className="flex items-center justify-between border-b border-line p-5">
               <div>
-                <h2 className="text-xl font-black">Weekly planner</h2>
+                <h2 className="font-serif text-2xl font-medium">Weekly planner</h2>
                 <p className="text-sm text-muted">Plan meals, then add ingredients to groceries from the selected meal.</p>
               </div>
               <Badge>2 planned</Badge>
             </div>
             <div className="overflow-x-auto">
               <table className="w-full min-w-[760px] text-left text-sm">
-                <thead className="bg-cream text-xs font-extrabold uppercase tracking-[0.12em] text-muted">
+                <thead className="bg-cream text-xs font-semibold uppercase tracking-[0.12em] text-muted">
                   <tr>
                     <th className="px-4 py-3">Day</th>
                     {slots.map((slot) => <th className="px-4 py-3" key={slot}>{slot}</th>)}
@@ -59,13 +59,13 @@ export default function MealsPage() {
                 <tbody>
                   {mealPlan.map((day) => (
                     <tr className="border-t border-line" key={day.day}>
-                      <td className="px-4 py-4 font-black">{day.day}</td>
+                      <td className="px-4 py-4 font-semibold">{day.day}</td>
                       {slots.map((slot) => (
                         <td className="px-4 py-4" key={slot}>
                           {day[slot] ? (
-                            <span className="rounded-full bg-soft-green px-3 py-1 font-bold text-success">{day[slot]}</span>
+                            <span className="rounded-full bg-soft-green px-3 py-1 font-medium text-success">{day[slot]}</span>
                           ) : (
-                            <button className="font-bold text-green">+ plan</button>
+                            <button className="font-medium text-green">+ plan</button>
                           )}
                         </td>
                       ))}
@@ -80,18 +80,18 @@ export default function MealsPage() {
         <aside className="space-y-4">
           <Card className="p-5">
             <div className="flex items-center justify-between">
-              <h2 className="text-lg font-black">Meal library</h2>
+              <h2 className="text-lg font-medium">Meal library</h2>
               <Badge>{meals.length} meals</Badge>
             </div>
-            <input className="mt-4 h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Search meals..." />
+            <input className="mt-4 h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Search meals..." />
             <div className="mt-4 space-y-3">
               {meals.map((meal) => (
-                <div className="flex items-center gap-3 rounded-lg border border-line p-3" key={meal.id}>
-                  <div className="grid size-10 place-items-center rounded-lg bg-cream text-muted">
+                <div className="flex items-center gap-3 rounded-xl border border-line p-3" key={meal.id}>
+                  <div className="grid size-10 place-items-center rounded-xl bg-cream text-muted">
                     <Soup className="size-5" />
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="truncate font-black">{meal.name}</p>
+                    <p className="truncate font-semibold">{meal.name}</p>
                     <p className="text-sm text-muted">{meal.ingredients ? `${meal.ingredients} ingredients` : "No ingredients yet"}</p>
                   </div>
                 </div>
@@ -102,21 +102,21 @@ export default function MealsPage() {
           <Card className="p-5">
             <div className="flex items-center gap-2">
               <CalendarPlus className="size-5 text-green" />
-              <h2 className="text-lg font-black">New meal</h2>
+              <h2 className="text-lg font-medium">New meal</h2>
             </div>
             <div className="mt-4 space-y-3">
-              <input className="h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
-              <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
+              <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
+              <textarea className="min-h-20 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
               <div className="grid grid-cols-[1fr_88px_88px_44px] gap-2">
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Ingredient" />
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Qty" />
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Unit" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Ingredient" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Qty" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Unit" />
                 <Button aria-label="Add ingredient" className="px-0">
                   <Plus className="size-4" />
                 </Button>
               </div>
               <p className="text-sm leading-6 text-muted">
-                When a meal plan entry is saved, its ingredients can be inserted into <span className="font-bold text-ink">grocery_items</span> with source <span className="font-bold text-ink">meal</span>.
+                When a meal plan entry is saved, its ingredients can be inserted into <span className="font-medium text-ink">grocery_items</span> with source <span className="font-medium text-ink">meal</span>.
               </p>
               <Button className="w-full">Add Meal</Button>
             </div>

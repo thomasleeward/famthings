@@ -40,11 +40,11 @@ export function AuthScreen() {
 
   return (
     <main className="grid min-h-screen bg-cream px-4 py-10 md:grid-cols-[1fr_440px] md:px-10">
-      <section className="flex flex-col justify-between rounded-lg bg-soft-green p-8">
+      <section className="flex flex-col justify-between rounded-2xl border border-line bg-soft-green/70 p-8">
         <div>
-          <div className="grid size-12 place-items-center rounded-lg border-2 border-ink bg-lime font-black">FT</div>
-          <p className="mt-8 text-xs font-extrabold uppercase tracking-[0.14em] text-green">Fam Things</p>
-          <h1 className="mt-2 max-w-2xl text-5xl font-black leading-tight md:text-7xl">
+          <div className="grid size-12 place-items-center rounded-2xl bg-lime/60 font-semibold text-green">FT</div>
+          <p className="mt-8 text-xs font-semibold uppercase tracking-[0.22em] text-green/75">Fam Things</p>
+          <h1 className="mt-3 max-w-2xl font-serif text-5xl font-medium leading-tight md:text-7xl">
             Shared family planning, without the spillover.
           </h1>
         </div>
@@ -54,9 +54,9 @@ export function AuthScreen() {
             ["Meals", Soup],
             ["Invites", Mail],
           ].map(([label, Icon]) => (
-            <div className="rounded-lg border border-green/20 bg-white/70 p-4" key={label as string}>
+            <div className="rounded-xl border border-green/20 bg-white/70 p-4" key={label as string}>
               <Icon className="size-5 text-green" />
-              <p className="mt-3 font-black">{label as string}</p>
+              <p className="mt-3 font-semibold">{label as string}</p>
             </div>
           ))}
         </div>
@@ -64,8 +64,8 @@ export function AuthScreen() {
 
       <section className="flex items-center justify-center py-8 md:px-8">
         <Card className="w-full p-6">
-          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-green">Private household</p>
-          <h2 className="mt-2 text-3xl font-black">{mode === "signin" ? "Sign in" : "Reset password"}</h2>
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green">Private household</p>
+          <h2 className="mt-2 text-3xl font-medium">{mode === "signin" ? "Sign in" : "Reset password"}</h2>
           <p className="mt-2 text-sm leading-6 text-muted">
             {mode === "signin"
               ? "Use your Fam Things account to view your household."
@@ -74,9 +74,9 @@ export function AuthScreen() {
 
           <form className="mt-6 space-y-3" onSubmit={handleSubmit}>
             <label className="block">
-              <span className="text-sm font-bold text-muted">Email</span>
+              <span className="text-sm font-medium text-muted">Email</span>
               <input
-                className="mt-1 h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium"
+                className="mt-1 h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium"
                 onChange={(event) => setEmail(event.target.value)}
                 required
                 type="email"
@@ -85,9 +85,9 @@ export function AuthScreen() {
             </label>
             {mode === "signin" ? (
               <label className="block">
-                <span className="text-sm font-bold text-muted">Password</span>
+                <span className="text-sm font-medium text-muted">Password</span>
                 <input
-                  className="mt-1 h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium"
+                  className="mt-1 h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium"
                   onChange={(event) => setPassword(event.target.value)}
                   required
                   type="password"
@@ -96,8 +96,8 @@ export function AuthScreen() {
               </label>
             ) : null}
 
-            {error ? <p className="rounded-lg border border-danger/20 bg-white px-3 py-2 text-sm font-bold text-danger">{error}</p> : null}
-            {message ? <p className="rounded-lg border border-green/20 bg-soft-green px-3 py-2 text-sm font-bold text-success">{message}</p> : null}
+            {error ? <p className="rounded-xl border border-danger/20 bg-white px-3 py-2 text-sm font-medium text-danger">{error}</p> : null}
+            {message ? <p className="rounded-xl border border-green/20 bg-soft-green px-3 py-2 text-sm font-medium text-success">{message}</p> : null}
 
             <Button className="w-full" disabled={loading}>
               {loading ? <Loader2 className="size-4 animate-spin" /> : null}
@@ -106,7 +106,7 @@ export function AuthScreen() {
           </form>
 
           <button
-            className="mt-4 text-sm font-bold text-green"
+            className="mt-4 text-sm font-medium text-green"
             onClick={() => {
               setError("");
               setMessage("");

@@ -20,7 +20,7 @@ export default function MealLibraryPage() {
           <div className="flex gap-2">
             <Link
               href="/meals"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-bold text-muted transition hover:bg-soft-green hover:text-green"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium text-muted transition hover:bg-soft-green hover:text-green"
             >
               <ArrowLeft className="size-4" /> Planner
             </Link>
@@ -34,7 +34,7 @@ export default function MealLibraryPage() {
       <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
         <section className="space-y-5">
           <Card className="p-4">
-            <label className="flex h-12 items-center gap-3 rounded-lg border border-line bg-cream px-3 text-muted">
+            <label className="flex h-12 items-center gap-3 rounded-xl border border-line bg-cream px-3 text-muted">
               <Search className="size-5" />
               <input className="w-full bg-transparent font-medium outline-none" placeholder="Search meals..." />
             </label>
@@ -51,19 +51,19 @@ export default function MealLibraryPage() {
           </Card>
 
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-black">All meals</h2>
+            <h2 className="font-serif text-2xl font-medium">All meals</h2>
             <p className="text-sm font-medium text-muted">{meals.length} meals</p>
           </div>
 
           <div className="grid gap-3 lg:grid-cols-2">
             {meals.map((meal) => (
               <Card className="group flex items-center gap-4 p-4 transition hover:border-green" key={meal.id}>
-                <div className="grid size-14 shrink-0 place-items-center rounded-lg bg-cream text-muted group-hover:text-green">
+                <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-cream text-muted group-hover:text-green">
                   <Soup className="size-6" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <p className="truncate text-lg font-black">{meal.name}</p>
+                    <p className="truncate text-lg font-medium">{meal.name}</p>
                     {meal.ingredients > 0 ? <Star className="size-4 fill-lime text-ink" /> : null}
                   </div>
                   <p className="text-sm text-muted">
@@ -76,7 +76,7 @@ export default function MealLibraryPage() {
           </div>
 
           <Card className="border-dashed bg-cream p-6 text-center">
-            <h2 className="text-lg font-black">Build out your library</h2>
+            <h2 className="text-lg font-medium">Build out your library</h2>
             <p className="mt-2 text-muted">Add family favorites to plan them quickly later.</p>
             <Button className="mt-4" variant="secondary">
               <Plus className="size-4" /> Add another meal
@@ -86,15 +86,15 @@ export default function MealLibraryPage() {
 
         <aside className="space-y-4">
           <Card className="p-5">
-            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-green">Selected meal</p>
-            <h2 className="mt-2 text-2xl font-black">{featuredMeal.name}</h2>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green">Selected meal</p>
+            <h2 className="mt-2 font-serif text-3xl font-medium">{featuredMeal.name}</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
               Keep ingredients attached to meals here, then use the planner to generate grocery items from the selected meal plan entry.
             </p>
             <div className="mt-4 space-y-2">
               {["Chicken breast", "Potatoes", "Broccoli"].map((ingredient) => (
-                <div className="flex items-center justify-between rounded-lg border border-line bg-cream px-3 py-2" key={ingredient}>
-                  <span className="font-bold">{ingredient}</span>
+                <div className="flex items-center justify-between rounded-xl border border-line bg-cream px-3 py-2" key={ingredient}>
+                  <span className="font-medium">{ingredient}</span>
                   <Badge className="bg-white text-muted">1</Badge>
                 </div>
               ))}
@@ -103,14 +103,14 @@ export default function MealLibraryPage() {
           </Card>
 
           <Card className="p-5">
-            <h2 className="text-lg font-black">New meal</h2>
+            <h2 className="text-lg font-medium">New meal</h2>
             <div className="mt-4 space-y-3">
-              <input className="h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
-              <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
+              <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
+              <textarea className="min-h-20 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
               <div className="grid grid-cols-[1fr_72px_72px] gap-2">
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Ingredient" />
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Qty" />
-                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Unit" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Ingredient" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Qty" />
+                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Unit" />
               </div>
               <Button className="w-full" variant="secondary">
                 <Plus className="size-4" /> Add Meal

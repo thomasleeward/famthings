@@ -26,16 +26,16 @@ export function Sidebar() {
   const pathname = usePathname();
 
   return (
-    <aside className="hidden min-h-screen w-72 shrink-0 border-r border-line bg-white/70 px-4 py-5 lg:block">
-      <Link href="/" className="flex items-center gap-3 rounded-lg px-3 py-2">
-        <div className="grid size-10 place-items-center rounded-lg border-2 border-ink bg-lime font-black">FT</div>
+    <aside className="hidden min-h-screen w-80 shrink-0 border-r border-line bg-cream px-8 py-9 lg:block">
+      <Link href="/" className="flex items-center gap-4 rounded-2xl">
+        <div className="grid size-12 place-items-center rounded-2xl bg-soft-green text-base font-semibold text-green">FT</div>
         <div>
-          <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-green">Fam Things</p>
-          <p className="text-xl font-black">Ward Fam</p>
+          <p className="text-xs font-semibold uppercase tracking-[0.22em] text-muted">Fam Things</p>
+          <p className="text-2xl font-semibold text-ink">Ward Fam</p>
         </div>
       </Link>
 
-      <nav className="mt-8 space-y-1">
+      <nav className="mt-16 space-y-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const active = pathname === item.href;
@@ -45,23 +45,23 @@ export function Sidebar() {
               href={item.href}
               key={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-lg px-3 py-3 text-sm font-bold text-muted transition hover:bg-soft-green hover:text-green",
-                active && "border border-green/20 bg-soft-green text-green",
+                "flex items-center gap-4 rounded-xl px-4 py-3 text-xl font-medium text-muted transition hover:bg-soft-green hover:text-green",
+                active && "bg-soft-green text-green",
               )}
             >
-              <Icon className="size-5" />
+              <Icon className="size-5 stroke-[1.8]" />
               {item.label}
             </Link>
           );
         })}
       </nav>
 
-      <div className="mt-10 rounded-lg border border-dashed border-line bg-cream p-4">
-        <div className="flex items-center gap-2 text-sm font-black text-ink">
-          <Settings className="size-4 text-green" />
+      <div className="mt-16 rounded-2xl border border-line bg-white/70 p-5">
+        <div className="flex items-center gap-2 text-sm font-semibold text-ink">
+          <Settings className="size-4 text-muted" />
           Backend ready
         </div>
-        <p className="mt-2 text-sm leading-6 text-muted">
+        <p className="mt-3 text-sm font-medium leading-7 text-muted">
           Supabase tables, RPCs, and invite Edge Function helpers are scaffolded for live data.
         </p>
       </div>

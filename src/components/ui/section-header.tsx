@@ -12,8 +12,8 @@ export function SectionHeader({
   return (
     <div className="flex flex-wrap items-start justify-between gap-4">
       <div>
-        {eyebrow ? <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-green">{eyebrow}</p> : null}
-        <h1 className="mt-1 text-4xl font-black tracking-normal text-ink md:text-5xl">{title}</h1>
+        {eyebrow ? <p className="text-xs font-semibold uppercase tracking-[0.22em] text-green/75">{eyebrow}</p> : null}
+        <h1 className="mt-3 font-serif text-5xl font-semibold tracking-normal text-ink md:text-6xl">{title}</h1>
       </div>
       {action}
     </div>

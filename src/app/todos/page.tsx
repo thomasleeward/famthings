@@ -33,7 +33,7 @@ export default function TodosPage() {
       <section>
         <div className="mb-2 flex items-center justify-between">
           <p className="font-medium text-muted">{complete} of {todos.length} done</p>
-          <p className="font-black text-success">{progress}%</p>
+          <p className="font-semibold text-success">{progress}%</p>
         </div>
         <Progress value={progress} />
       </section>
@@ -45,16 +45,16 @@ export default function TodosPage() {
             return (
               <div key={group}>
                 <div className="mb-3 flex items-center justify-between">
-                  <h2 className="text-xl font-black">{group}</h2>
+                  <h2 className="font-serif text-2xl font-medium">{group}</h2>
                   <p className="text-sm text-muted">{groupTodos.length}</p>
                 </div>
                 {groupTodos.length ? (
                   <div className="space-y-3">
                     {groupTodos.map((todo) => (
                       <Card className="flex items-center gap-4 p-4" key={todo.id}>
-                        <span className={todo.completed ? "grid size-9 place-items-center rounded-full bg-success text-white" : "size-9 rounded-full border-2 border-green"}>{todo.completed ? "✓" : ""}</span>
+                        <span className={todo.completed ? "grid size-9 place-items-center rounded-full bg-success text-white" : "size-9 rounded-full border border-green"}>{todo.completed ? "✓" : ""}</span>
                         <div className="min-w-0">
-                          <p className={todo.completed ? "font-black text-muted line-through" : "font-black"}>{todo.title}</p>
+                          <p className={todo.completed ? "font-semibold text-muted line-through" : "font-semibold"}>{todo.title}</p>
                           <p className="flex items-center gap-1 text-sm text-muted">
                             <CalendarDays className="size-3.5" /> {todo.due}
                           </p>
@@ -76,18 +76,18 @@ export default function TodosPage() {
         </section>
 
         <Card className="h-fit p-5">
-          <h2 className="text-lg font-black">New To-do</h2>
+          <h2 className="text-lg font-medium">New To-do</h2>
           <div className="mt-4 space-y-3">
-            <input className="h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="What needs doing?" />
-            <textarea className="min-h-24 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
-            <input className="h-11 w-full rounded-lg border border-line bg-cream px-3 font-medium" type="datetime-local" />
-            <select className="h-11 w-full rounded-lg border border-line bg-cream px-3 font-bold text-muted">
+            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="What needs doing?" />
+            <textarea className="min-h-24 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
+            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" type="datetime-local" />
+            <select className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium text-muted">
               <option>No linked event</option>
               <option>Thomas Birthday</option>
               <option>Mother&apos;s Day</option>
             </select>
             <p className="text-sm leading-6 text-muted">
-              Event-linked items use the same <span className="font-bold text-ink">todos</span> table with an optional <span className="font-bold text-ink">event_id</span>.
+              Event-linked items use the same <span className="font-medium text-ink">todos</span> table with an optional <span className="font-medium text-ink">event_id</span>.
             </p>
             <Button className="w-full">
               <Plus className="size-4" /> Add To-do
