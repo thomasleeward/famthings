@@ -11,7 +11,7 @@ export default function TodosPage() {
   const progress = Math.round((complete / todos.length) * 100);
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       <SectionHeader
         eyebrow="Ward Fam"
         title="To-dos"
@@ -38,8 +38,8 @@ export default function TodosPage() {
         <Progress value={progress} />
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-        <section className="space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="space-y-5">
           {["Due soon", "Later this week", "Someday", "Done"].map((group) => {
             const groupTodos = todos.filter((todo) => todo.period === group);
             return (
@@ -63,7 +63,7 @@ export default function TodosPage() {
                     ))}
                   </div>
                 ) : (
-                  <Card className="flex items-center justify-between border-dashed bg-cream p-5">
+                  <Card className="flex items-center justify-between border-dashed bg-cream p-4">
                     <p className="text-muted">Nothing due {group === "Due soon" ? "today or tomorrow" : group.toLowerCase()}</p>
                     <Button variant="secondary">
                       <Plus className="size-4" /> Add a to-do
@@ -75,13 +75,13 @@ export default function TodosPage() {
           })}
         </section>
 
-        <Card className="h-fit p-5">
+        <Card className="h-fit p-4">
           <h2 className="text-lg font-medium">New To-do</h2>
           <div className="mt-4 space-y-3">
-            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="What needs doing?" />
-            <textarea className="min-h-24 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
-            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" type="datetime-local" />
-            <select className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium text-muted">
+            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="What needs doing?" />
+            <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
+            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" type="datetime-local" />
+            <select className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium text-muted">
               <option>No linked event</option>
               <option>Thomas Birthday</option>
               <option>Mother&apos;s Day</option>

@@ -27,8 +27,8 @@ export function Sidebar() {
 
   return (
     <aside className="hidden min-h-screen w-64 shrink-0 border-r border-line bg-cream px-5 py-7 lg:block">
-      <Link href="/" className="flex items-center gap-3 rounded-2xl">
-        <div className="grid size-9 place-items-center rounded-xl bg-soft-green text-sm font-semibold text-green">FT</div>
+      <Link href="/" className="flex items-center gap-3 rounded-lg">
+        <div className="grid size-9 place-items-center rounded-lg bg-soft-green text-sm font-semibold text-green">FT</div>
         <div>
           <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted">Fam Things</p>
           <p className="text-lg font-semibold leading-6 text-ink">Ward Fam</p>
@@ -45,7 +45,7 @@ export function Sidebar() {
               href={item.href}
               key={item.href}
               className={cn(
-                "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-muted transition hover:bg-soft-green hover:text-green",
+                "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-muted transition hover:bg-soft-green hover:text-green",
                 active && "bg-soft-green text-green",
               )}
             >
@@ -56,7 +56,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      <div className="mt-12 rounded-2xl border border-line bg-white/70 p-4">
+      <div className="mt-12 rounded-lg border border-line bg-white/70 p-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-ink">
           <Settings className="size-3.5 text-muted" />
           Backend ready

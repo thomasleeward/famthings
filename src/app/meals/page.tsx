@@ -10,7 +10,7 @@ const slots = ["breakfast", "lunch", "dinner", "snack"] as const;
 
 export default function MealsPage() {
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       <SectionHeader
         eyebrow="Ward Fam"
         title="Meals"
@@ -18,7 +18,7 @@ export default function MealsPage() {
           <div className="flex gap-2">
             <Link
               href="/meals/library"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-green/30 bg-white px-4 text-sm font-semibold text-green transition hover:bg-soft-green"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border border-green/30 bg-white px-4 text-sm font-semibold text-green transition hover:bg-soft-green"
             >
               <BookOpen className="size-4" /> Meal library
             </Link>
@@ -29,19 +29,19 @@ export default function MealsPage() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_420px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
         <section className="space-y-4">
           <div className="grid grid-cols-7 gap-2">
             {mealPlan.map((day, index) => (
-              <button className={index === 0 ? "rounded-xl bg-soft-lime p-3 text-center font-semibold text-green" : "rounded-xl border border-line bg-white p-3 text-center font-semibold text-muted"} key={day.day}>
+              <button className={index === 0 ? "rounded-lg bg-soft-lime p-2.5 text-center font-semibold text-green" : "rounded-lg border border-line bg-white p-2.5 text-center font-semibold text-muted"} key={day.day}>
                 <span className="block text-xs uppercase">{day.day.split(" ")[0]}</span>
-                <span className="text-2xl">{day.day.split(" ")[1]}</span>
+                <span className="text-xl">{day.day.split(" ")[1]}</span>
               </button>
             ))}
           </div>
 
           <Card className="overflow-hidden">
-            <div className="flex items-center justify-between border-b border-line p-5">
+            <div className="flex items-center justify-between border-b border-line p-4">
               <div>
                 <h2 className="font-serif text-2xl font-medium">Weekly planner</h2>
                 <p className="text-sm text-muted">Plan meals, then add ingredients to groceries from the selected meal.</p>
@@ -78,16 +78,16 @@ export default function MealsPage() {
         </section>
 
         <aside className="space-y-4">
-          <Card className="p-5">
+          <Card className="p-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-medium">Meal library</h2>
               <Badge>{meals.length} meals</Badge>
             </div>
-            <input className="mt-4 h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Search meals..." />
+            <input className="mt-4 h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Search meals..." />
             <div className="mt-4 space-y-3">
               {meals.map((meal) => (
-                <div className="flex items-center gap-3 rounded-xl border border-line p-3" key={meal.id}>
-                  <div className="grid size-10 place-items-center rounded-xl bg-cream text-muted">
+                <div className="flex items-center gap-3 rounded-lg border border-line p-3" key={meal.id}>
+                  <div className="grid size-10 place-items-center rounded-lg bg-cream text-muted">
                     <Soup className="size-5" />
                   </div>
                   <div className="min-w-0 flex-1">
@@ -99,18 +99,18 @@ export default function MealsPage() {
             </div>
           </Card>
 
-          <Card className="p-5">
+          <Card className="p-4">
             <div className="flex items-center gap-2">
               <CalendarPlus className="size-5 text-green" />
               <h2 className="text-lg font-medium">New meal</h2>
             </div>
             <div className="mt-4 space-y-3">
-              <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
-              <textarea className="min-h-20 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
+              <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
+              <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
               <div className="grid grid-cols-[1fr_88px_88px_44px] gap-2">
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Ingredient" />
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Qty" />
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Unit" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Ingredient" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Qty" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Unit" />
                 <Button aria-label="Add ingredient" className="px-0">
                   <Plus className="size-4" />
                 </Button>

@@ -7,7 +7,7 @@ import { events, todos } from "@/lib/data/sample";
 
 export default function EventsPage() {
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       <SectionHeader
         eyebrow="Ward Fam"
         title="Events"
@@ -26,8 +26,8 @@ export default function EventsPage() {
         ))}
       </div>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
-        <section className="space-y-6">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
+        <section className="space-y-5">
           {["May 2026", "June 2026", "July 2026", "November 2026"].map((month) => {
             const monthEvents = events.filter((event) => event.month === month);
             return (
@@ -40,10 +40,10 @@ export default function EventsPage() {
                   <div className="space-y-3">
                     {monthEvents.map((event) => (
                       <Card className="flex items-center gap-4 p-4" key={event.id}>
-                        <div className="grid size-20 shrink-0 place-items-center rounded-xl bg-cream text-center">
+                        <div className="grid size-16 shrink-0 place-items-center rounded-lg bg-cream text-center">
                           <div>
                             <p className="text-xs font-semibold uppercase text-muted">{event.date.slice(0, 3)}</p>
-                            <p className="text-3xl font-medium">{event.date.match(/\d+/)?.[0]}</p>
+                            <p className="text-2xl font-medium">{event.date.match(/\d+/)?.[0]}</p>
                           </div>
                         </div>
                         <div className="min-w-0 flex-1">
@@ -59,7 +59,7 @@ export default function EventsPage() {
                     ))}
                   </div>
                 ) : (
-                  <Card className="flex items-center justify-between border-dashed bg-cream p-5">
+                  <Card className="flex items-center justify-between border-dashed bg-cream p-4">
                     <p className="text-muted">No events this month</p>
                     <Button variant="secondary">
                       <Plus className="size-4" /> Add event
@@ -71,23 +71,23 @@ export default function EventsPage() {
           })}
         </section>
 
-        <Card className="h-fit p-5">
+        <Card className="h-fit p-4">
           <div className="flex items-center gap-2">
             <CalendarPlus className="size-5 text-green" />
             <h2 className="text-lg font-medium">Event builder</h2>
           </div>
           <div className="mt-4 space-y-3">
-            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Event title" />
-            <textarea className="min-h-24 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
-            <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" type="datetime-local" />
-            <div className="rounded-xl border border-line bg-cream p-3">
+            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Event title" />
+            <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Notes" />
+            <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" type="datetime-local" />
+            <div className="rounded-lg border border-line bg-cream p-3">
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Linked to-dos</p>
               <p className="mt-2 text-sm text-muted">
                 To-dos created here insert into <span className="font-medium text-ink">todos.event_id</span>, so they also show on the To-dos page.
               </p>
               <div className="mt-3 space-y-2">
                 {todos.filter((todo) => todo.eventId).map((todo) => (
-                  <div className="rounded-xl bg-white px-3 py-2 text-sm font-medium" key={todo.id}>{todo.title}</div>
+                  <div className="rounded-lg bg-white px-3 py-2 text-sm font-medium" key={todo.id}>{todo.title}</div>
                 ))}
               </div>
             </div>

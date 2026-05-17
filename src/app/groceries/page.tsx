@@ -11,7 +11,7 @@ export default function GroceriesPage() {
   const open = groceries.filter((item) => !item.checked);
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       <SectionHeader
         eyebrow="Ward Fam"
         title="Groceries"
@@ -30,9 +30,9 @@ export default function GroceriesPage() {
         <Progress value={(checked / groceries.length) * 100} />
       </section>
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_360px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <Card className="overflow-hidden">
-          <div className="flex items-center justify-between border-b border-line p-5">
+          <div className="flex items-center justify-between border-b border-line p-4">
             <h2 className="font-serif text-2xl font-medium">To get</h2>
             <Badge>{open.length}</Badge>
           </div>
@@ -58,7 +58,7 @@ export default function GroceriesPage() {
         </Card>
 
         <aside className="space-y-4">
-          <Card className="p-5">
+          <Card className="p-4">
             <div className="flex items-center gap-2">
               <ShoppingCart className="size-5 text-green" />
               <h2 className="text-lg font-medium">Grocery flow</h2>
@@ -67,7 +67,7 @@ export default function GroceriesPage() {
               Manual items and meal-generated ingredients live together in <span className="font-medium text-ink">grocery_items</span>. Meal rows should keep <span className="font-medium text-ink">meal_plan_entry_id</span> for traceability.
             </p>
           </Card>
-          <Card className="p-5">
+          <Card className="p-4">
             <h2 className="text-lg font-medium">Cart actions</h2>
             <div className="mt-4 flex flex-wrap gap-2">
               <Button variant="secondary" disabled>Clear cart ({checked})</Button>

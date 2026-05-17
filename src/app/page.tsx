@@ -37,18 +37,18 @@ export default function Home() {
 
       <section className="grid gap-4 md:grid-cols-3">
         {stats.map(({ label, value, icon: Icon }) => (
-          <Card className="p-5" key={label}>
+          <Card className="p-4" key={label}>
             <div className="flex items-center justify-between">
               <p className="text-sm font-medium text-muted">{label}</p>
               <Icon className="size-5 text-green" />
             </div>
-            <p className="mt-5 font-serif text-4xl font-medium">{value}</p>
+            <p className="mt-3 font-serif text-3xl font-medium">{value}</p>
           </Card>
         ))}
       </section>
 
-      <section className="grid gap-6 xl:grid-cols-[1.25fr_0.75fr]">
-        <Card className="p-5">
+      <section className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_340px]">
+        <Card className="p-4">
           <div className="flex items-start justify-between gap-4 border-b border-line pb-4">
             <div>
               <p className="text-xs font-semibold uppercase tracking-[0.14em] text-muted">Today</p>
@@ -58,9 +58,9 @@ export default function Home() {
           </div>
           <div className="mt-4 grid gap-3 md:grid-cols-2">
             {events.slice(0, 2).map((event) => (
-              <Link href="/events" key={event.id} className="rounded-xl border border-line bg-cream p-4 transition hover:border-green">
+              <Link href="/events" key={event.id} className="rounded-lg border border-line bg-cream p-4 transition hover:border-green">
                 <div className="flex items-center gap-3">
-                  <div className="grid size-12 place-items-center rounded-xl bg-white text-center text-sm font-semibold">
+                  <div className="grid size-10 place-items-center rounded-lg bg-white text-center text-sm font-semibold">
                     {event.date.split(", ")[1]}
                   </div>
                   <div>
@@ -70,10 +70,10 @@ export default function Home() {
                 </div>
               </Link>
             ))}
-            <Link href="/meals" className="rounded-xl border border-line bg-soft-green p-4 transition hover:border-green">
+            <Link href="/meals" className="rounded-lg border border-line bg-soft-green p-4 transition hover:border-green">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="grid size-12 place-items-center rounded-xl bg-white text-green">
+                  <div className="grid size-10 place-items-center rounded-lg bg-white text-green">
                     <Moon className="size-5" />
                   </div>
                   <div>
@@ -87,7 +87,7 @@ export default function Home() {
           </div>
         </Card>
 
-        <Card className="p-5">
+        <Card className="p-4">
           <div className="flex items-center justify-between">
             <h2 className="font-serif text-2xl font-medium">To do</h2>
             <Link href="/todos" className="text-sm font-medium text-green">
@@ -96,7 +96,7 @@ export default function Home() {
           </div>
           <div className="mt-4 space-y-3">
             {openTodos.map((todo) => (
-              <div className="flex items-center gap-3 rounded-xl border border-line p-3" key={todo.id}>
+              <div className="flex items-center gap-3 rounded-lg border border-line p-3" key={todo.id}>
                 <span className="size-5 rounded-full border border-green" />
                 <div>
                   <p className="font-semibold">{todo.title}</p>
@@ -112,7 +112,7 @@ export default function Home() {
         <h2 className="mb-4 font-serif text-2xl font-medium">Quick add</h2>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           {quickAdds.map(({ label, icon: Icon, href }) => (
-            <Link href={href} key={label} className="flex items-center gap-3 rounded-xl border border-line bg-white p-4 font-semibold transition hover:border-green">
+            <Link href={href} key={label} className="flex items-center gap-3 rounded-lg border border-line bg-white p-4 font-semibold transition hover:border-green">
               <Icon className="size-5 text-green" />
               {label}
             </Link>

@@ -25,7 +25,7 @@ export function MobileNav() {
         return (
           <Link
             href={item.href}
-            className={cn("flex flex-col items-center gap-1 rounded-xl py-1.5 text-xs font-semibold text-muted", active && "text-green")}
+            className={cn("flex flex-col items-center gap-1 rounded-lg py-1.5 text-xs font-semibold text-muted", active && "text-green")}
             key={item.href}
           >
             <Icon className="size-5" />

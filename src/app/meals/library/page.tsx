@@ -12,7 +12,7 @@ export default function MealLibraryPage() {
   const featuredMeal = meals[1];
 
   return (
-    <div className="space-y-7">
+    <div className="space-y-6">
       <SectionHeader
         eyebrow="Meals"
         title="Meal Library"
@@ -20,7 +20,7 @@ export default function MealLibraryPage() {
           <div className="flex gap-2">
             <Link
               href="/meals"
-              className="inline-flex h-10 items-center justify-center gap-2 rounded-xl px-4 text-sm font-medium text-muted transition hover:bg-soft-green hover:text-green"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg px-4 text-sm font-medium text-muted transition hover:bg-soft-green hover:text-green"
             >
               <ArrowLeft className="size-4" /> Planner
             </Link>
@@ -31,10 +31,10 @@ export default function MealLibraryPage() {
         }
       />
 
-      <div className="grid gap-6 xl:grid-cols-[1fr_380px]">
+      <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
         <section className="space-y-5">
           <Card className="p-4">
-            <label className="flex h-12 items-center gap-3 rounded-xl border border-line bg-cream px-3 text-muted">
+            <label className="flex h-12 items-center gap-3 rounded-lg border border-line bg-cream px-3 text-muted">
               <Search className="size-5" />
               <input className="w-full bg-transparent font-medium outline-none" placeholder="Search meals..." />
             </label>
@@ -58,8 +58,8 @@ export default function MealLibraryPage() {
           <div className="grid gap-3 lg:grid-cols-2">
             {meals.map((meal) => (
               <Card className="group flex items-center gap-4 p-4 transition hover:border-green" key={meal.id}>
-                <div className="grid size-14 shrink-0 place-items-center rounded-xl bg-cream text-muted group-hover:text-green">
-                  <Soup className="size-6" />
+                <div className="grid size-12 shrink-0 place-items-center rounded-lg bg-cream text-muted group-hover:text-green">
+                  <Soup className="size-5" />
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export default function MealLibraryPage() {
         </section>
 
         <aside className="space-y-4">
-          <Card className="p-5">
+          <Card className="p-4">
             <p className="text-xs font-semibold uppercase tracking-[0.14em] text-green">Selected meal</p>
             <h2 className="mt-2 font-serif text-3xl font-medium">{featuredMeal.name}</h2>
             <p className="mt-2 text-sm leading-6 text-muted">
@@ -93,7 +93,7 @@ export default function MealLibraryPage() {
             </p>
             <div className="mt-4 space-y-2">
               {["Chicken breast", "Potatoes", "Broccoli"].map((ingredient) => (
-                <div className="flex items-center justify-between rounded-xl border border-line bg-cream px-3 py-2" key={ingredient}>
+                <div className="flex items-center justify-between rounded-lg border border-line bg-cream px-3 py-2" key={ingredient}>
                   <span className="font-medium">{ingredient}</span>
                   <Badge className="bg-white text-muted">1</Badge>
                 </div>
@@ -102,15 +102,15 @@ export default function MealLibraryPage() {
             <Button className="mt-4 w-full">Plan this meal</Button>
           </Card>
 
-          <Card className="p-5">
+          <Card className="p-4">
             <h2 className="text-lg font-medium">New meal</h2>
             <div className="mt-4 space-y-3">
-              <input className="h-11 w-full rounded-xl border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
-              <textarea className="min-h-20 w-full rounded-xl border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
+              <input className="h-10 w-full rounded-lg border border-line bg-cream px-3 font-medium" placeholder="Meal name" />
+              <textarea className="min-h-20 w-full rounded-lg border border-line bg-cream px-3 py-3 font-medium" placeholder="Description" />
               <div className="grid grid-cols-[1fr_72px_72px] gap-2">
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Ingredient" />
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Qty" />
-                <input className="h-10 rounded-xl border border-line bg-cream px-3" placeholder="Unit" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Ingredient" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Qty" />
+                <input className="h-10 rounded-lg border border-line bg-cream px-3" placeholder="Unit" />
               </div>
               <Button className="w-full" variant="secondary">
                 <Plus className="size-4" /> Add Meal
