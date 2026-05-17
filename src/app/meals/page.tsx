@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { BookOpen, CalendarPlus, Plus, Soup } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,9 +16,12 @@ export default function MealsPage() {
         title="Meals"
         action={
           <div className="flex gap-2">
-            <Button variant="secondary">
+            <Link
+              href="/meals/library"
+              className="inline-flex h-10 items-center justify-center gap-2 rounded-lg border-2 border-green bg-white px-4 text-sm font-bold text-green transition hover:-translate-y-0.5"
+            >
               <BookOpen className="size-4" /> Meal library
-            </Button>
+            </Link>
             <Button>
               <Plus className="size-4" /> New meal
             </Button>
