@@ -11,6 +11,7 @@ import {
   Soup,
   UsersRound,
 } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -22,17 +23,14 @@ const navItems = [
   { href: "/household", label: "Household", icon: UsersRound },
 ];
 
-export function Sidebar() {
+export function Sidebar({ householdName }: { householdName: string }) {
   const pathname = usePathname();
 
   return (
     <aside className="hidden min-h-screen w-64 shrink-0 border-r border-line bg-cream px-5 py-7 lg:block">
       <Link href="/" className="flex items-center gap-3 rounded-lg">
-        <div className="grid size-9 place-items-center rounded-lg bg-soft-green text-sm font-semibold text-green">FT</div>
-        <div>
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-muted">Fam Things</p>
-          <p className="text-lg font-semibold leading-6 text-ink">Ward Fam</p>
-        </div>
+        <BrandLogo className="size-10" />
+        <p className="truncate text-lg font-semibold leading-6 text-ink">{householdName}</p>
       </Link>
 
       <nav className="mt-12 space-y-1.5">

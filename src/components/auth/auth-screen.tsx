@@ -2,6 +2,7 @@
 
 import { FormEvent, useState } from "react";
 import { CheckSquare, Loader2, Mail, Soup } from "lucide-react";
+import { BrandLogo } from "@/components/brand-logo";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { sendPasswordResetEmail, signInWithEmail } from "@/lib/supabase/auth";
@@ -42,7 +43,7 @@ export function AuthScreen() {
     <main className="grid min-h-screen bg-cream px-4 py-10 md:grid-cols-[1fr_440px] md:px-10">
       <section className="flex flex-col justify-between rounded-2xl border border-line bg-soft-green/70 p-8">
         <div>
-          <div className="grid size-12 place-items-center rounded-2xl bg-lime/60 font-semibold text-green">FT</div>
+          <BrandLogo className="size-12 rounded-2xl bg-lime/60" />
           <p className="mt-8 text-xs font-semibold uppercase tracking-[0.22em] text-green/75">Fam Things</p>
           <h1 className="mt-3 max-w-2xl font-serif text-5xl font-medium leading-tight md:text-7xl">
             Shared family planning, without the spillover.
