@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Analytics } from "@vercel/analytics/next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { AuthGate } from "@/components/auth/auth-gate";
 import "./globals.css";
@@ -30,6 +31,7 @@ export default function RootLayout({
     >
       <body className="flex min-h-full flex-col bg-cream text-ink">
         <AuthGate>{children}</AuthGate>
+        <Analytics />
       </body>
     </html>
   );
